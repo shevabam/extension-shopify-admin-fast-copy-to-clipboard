@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>__MSG_extension_name__</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body class="popup">
+    <div class="popup-container">
+        <div class="header">
+            <h1><img src="icons/icon16.png" /> __MSG_extension_short_name__</h1>
+            <div class="header-right">
+                <div class="theme-toggle" title="__MSG_theme__">
+                    <button id="theme-toggle" class="icon-button" aria-label="__MSG_theme__"></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="description">
+                <p>__MSG_extension_description__</p>
+                <p>__MSG_extension_instructions__</p>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <span class="row-label">__MSG_popup_extension_enable__</span>
+                <label class="switch" title="__MSG_popup_extension_enable__">
+                    <input type="checkbox" id="extension-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+            
+        <footer>
+            <button id="rate-button" class="rate-button" title="__MSG_rate_button__">
+                <span class="star-icon">★</span> __MSG_rate_button__
+            </button>
+
+            <div class="footer-links">
+                <a href="https://shevabam.fr" target="_blank" rel="noopener">__MSG_footer_by__ shevabam</a>
+                <span class="footer-separator">|</span>
+                <a href="https://github.com/shevabam/extension-shopify-admin-fast-copy-to-clipboard" target="_blank" rel="noopener">__MSG_footer_more_infos__</a>
+            </div>
+        </footer>
+            
+            
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

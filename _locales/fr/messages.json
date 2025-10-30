@@ -1,0 +1,56 @@
+{
+  "extension_name": {
+    "message": "Shopify Admin Copie Rapide - Copie champs Produits, Variantes, Collections"
+  },
+  "extension_description": {
+    "message": "Copiez rapidement les champs produits (ID, titre, SKU, code-barres, prix, poids, quantités, ...) depuis l'admin Shopify"
+  },
+  "extension_instructions": {
+    "message": "Cliquez simplement sur l'icône de copie à côté de n'importe quel champ pour copier sa valeur dans le presse-papiers."
+  },
+  "extension_short_name": {
+    "message": "Shopify Admin Copie Rapide"
+  },
+  "contextual_support": {
+    "message": "Support"
+  },
+  "contextual_issues": {
+    "message": "Problèmes et suggestions"
+  },
+  "contextual_github": {
+    "message": "GitHub"
+  },
+  "contextual_report_issue": {
+    "message": "Signaler un problème"
+  },
+  "contextual_donate": {
+    "message": "Faire un don"
+  },
+  "contextual_review": {
+    "message": "Laisser un avis"
+  },
+  "contextual_projects": {
+    "message": "Tous mes projets"
+  },
+  "footer_by": {
+    "message": "Par"
+  },
+  "footer_more_infos": {
+    "message": "Plus d'infos"
+  },
+  "rate_button": {
+      "message": "Noter cette extension"
+  },
+  "popup_extension_enable": {
+    "message": "Afficher les boutons pour copier"
+  },
+  "theme": {
+    "message": "Thème"
+  },
+  "copy": {
+    "message": "Copier"
+  },
+  "copied": {
+    "message": "Copié !"
+  }
+}

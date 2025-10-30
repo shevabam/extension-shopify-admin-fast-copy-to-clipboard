@@ -1,0 +1,108 @@
+.fast-copy-btn {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 8px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  position: relative;
+  z-index: 100000;
+  flex-shrink: 0;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.fast-copy-btn:hover {
+  background: rgba(92, 106, 196, 0.2) !important;
+}
+
+.fast-copy-wrapper {
+  display: flex !important;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.fast-copy-field,
+.fast-copy-wrapper > input[type="text"] {
+  flex: 1;
+  margin-right: 8px !important;
+  min-width: 0;
+}
+
+.fast-copy-tooltip {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 100000;
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  animation: fadeIn 0.15s ease-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fast-copy-tooltip.visible {
+  transform: translateY(0);
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes highlight {
+  from { background-color: #d4f5e7; }
+  to { background-color: transparent; }
+}
+
+.fast-copy-highlight {
+  animation: highlight 1s ease-out;
+}
+
+[class*="Polaris-TextField"] .fast-copy-btn,
+[class*="Polaris-TextField"] + .fast-copy-btn {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0 !important;
+}
+
+[class*="Polaris-Stack"],
+[class*="Polaris-FormLayout"] {
+  position: relative;
+}
+
+
+
+
+
+@media (max-width: 768px) {
+  .fast-copy-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+  
+  [class*="Polaris-TextField"] .fast-copy-btn,
+  [class*="Polaris-TextField"] + .fast-copy-btn {
+    right: 2px;
+  }
+}

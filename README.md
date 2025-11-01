@@ -16,7 +16,7 @@ This Chrome extension **adds a small Copy button** next to common fields in the 
 
 ## Installation
 
-Download the extension from the [**Chrome Web Store**](_TODO_) or [**Microsoft Edge Store**](_TODO_)
+Download the extension from the [**Chrome Web Store**](https://chromewebstore.google.com/detail/shopify-admin-copy-to-cli/gmmdkkjncbflfbkdgcklogfnoajlkjjp?authuser=0&hl=fr) or **Microsoft Edge Store** (coming soon!)
 
 After installing the extension, pin it to your browser:
 
@@ -39,7 +39,7 @@ No external requests or analytics. The extension operates entirely client-side i
 Your feedback is valuable for improving the extension!
 
 - 🐛 Report a bug: [Create an issue](https://github.com/shevabam/extension-shopify-admin-fast-copy-to-clipboard/issues)
-- ⭐ Like the extension? Consider rating it on the [Chrome Web Store](https://chrome.google.com/webstore/detail/shopify-admin-fast-copy-to-clipboard/TODO__EXTENSION_ID) or [Microsoft Edge Store](TODO__URL_EXTENSION)
+- ⭐ Like the extension? Consider rating it on the [Chrome Web Store](https://chrome.google.com/webstore/detail/shopify-admin-fast-copy-to-clipboard/https://chromewebstore.google.com/detail/shopify-admin-copy-to-cli/gmmdkkjncbflfbkdgcklogfnoajlkjjp?authuser=0&hl=fr) or Microsoft Edge Store (coming soon!)
 
 ## Author
 

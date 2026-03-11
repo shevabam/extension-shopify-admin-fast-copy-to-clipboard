@@ -88,8 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const rateButton = document.getElementById('rate-button');
     if (rateButton) {
         rateButton.addEventListener('click', () => {
+            const isEdge = navigator.userAgent.includes('Edg/');
             const extensionId = chrome.runtime.id;
-            const webStoreUrl = `https://chrome.google.com/webstore/detail/${extensionId}/reviews`;
+            const webStoreUrl = isEdge 
+                ? `https://microsoftedge.microsoft.com/addons/detail/${extensionId}`
+                : `https://chromewebstore.google.com/detail/${extensionId}/reviews`;
+            
             chrome.tabs.create({ url: webStoreUrl });
         });
     }

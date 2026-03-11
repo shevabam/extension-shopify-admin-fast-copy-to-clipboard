@@ -79,9 +79,14 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     case "donate":
       chrome.tabs.create({ url: 'https://buymeacoffee.com/shevabam' });
       break;
-    case "review":
-      chrome.tabs.create({ url: `https://chromewebstore.google.com/detail/${chrome.runtime.id}/reviews` });
+    case "review": {
+      const isEdge = navigator.userAgent.includes('Edg/');
+      const reviewUrl = isEdge
+        ? `https://microsoftedge.microsoft.com/addons/detail/${chrome.runtime.id}`
+        : `https://chromewebstore.google.com/detail/${chrome.runtime.id}/reviews`;
+      chrome.tabs.create({ url: reviewUrl });
       break;
+    }
     case "projects":
       chrome.tabs.create({ url: `https://shevabam.fr` });
       break;

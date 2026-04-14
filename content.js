@@ -3,6 +3,9 @@ const FIELDS_CONFIG = (window.FIELDS_CONFIG || []);
 let observer = null;
 let retryInterval = null;
 let isEnabled = false;
+let boundSafeAddCopyButtons = null;
+let boundClickHandler = null;
+
 
 function ensureStyleInjected() {
   if (!styleEl) {
@@ -131,43 +134,103 @@ function showTooltip(element, text) {
 
 function removeCopyButtons() {
   try {
-    // Remove all buttons
     document.querySelectorAll('.fast-copy-btn').forEach(btn => btn.remove());
 
-    // Clean field classes and unwrap wrappers when possible
+    // Also remove from iframes (e.g. TinyMCE editor)
+    document.querySelectorAll('iframe').forEach(iframe => {
+      try {
+        const doc = iframe.contentDocument;
+        if (doc) doc.querySelectorAll('.fast-copy-btn').forEach(btn => btn.remove());
+      } catch (e) { /* cross-origin, skip */ }
+    });
+
+    // Clean up shadow DOM buttons
+    FIELDS_CONFIG.forEach(config => {
+      if (config.shadowInputSelector) {
+        try {
+          document.querySelectorAll(config.selector).forEach(el => {
+            if (el.shadowRoot) {
+              el.shadowRoot.querySelectorAll('.fast-copy-btn').forEach(btn => btn.remove());
+              el.shadowRoot.querySelectorAll('link[data-fast-copy]').forEach(link => link.remove());
+              const inputWrapper = el.shadowRoot.querySelector('.input-wrapper');
+              if (inputWrapper) inputWrapper.style.position = '';
+            }
+          });
+        } catch (e) { /* skip */ }
+      }
+    });
+
+    // Clean field classes
     document.querySelectorAll('.fast-copy-field').forEach(field => {
       field.classList.remove('fast-copy-highlight');
       field.classList.remove('fast-copy-field');
-      const parent = field.parentElement;
-      if (parent && parent.classList.contains('fast-copy-wrapper')) {
-        // move field out of wrapper and remove wrapper
-        parent.parentNode.insertBefore(field, parent);
-        parent.remove();
-      }
+    });
+
+    // Remove orphan wrappers (use Array.from snapshot to avoid live-NodeList issues)
+    document.querySelectorAll('.fast-copy-wrapper').forEach(wrapper => {
+      Array.from(wrapper.children).forEach(child => {
+        if (child.classList.contains('fast-copy-btn')) {
+          child.remove();
+        } else if (wrapper.parentNode) {
+          wrapper.parentNode.insertBefore(child, wrapper);
+        }
+      });
+      wrapper.remove();
     });
   } catch (e) {
-    console.error('Error removing buttons:', e);
+    console.error('[FCB] Error removing buttons:', e);
   }
 }
 
 function addCopyButtons() {
+  if (!isEnabled) return;
   FIELDS_CONFIG.forEach(config => {
     try {
       const fields = document.querySelectorAll(config.selector);
       
       fields.forEach(field => {
         try {
+          // Handle shadow DOM elements (e.g. s-internal-text-field)
+          if (config.shadowInputSelector && field.shadowRoot) {
+            if (field.shadowRoot.querySelector('.fast-copy-btn')) return;
+
+            const actualInput = field.shadowRoot.querySelector(config.shadowInputSelector);
+            if (!actualInput) return;
+
+            // Inject stylesheet into shadow root if not already present
+            if (!field.shadowRoot.querySelector('link[data-fast-copy]')) {
+              const styleLink = document.createElement('link');
+              styleLink.rel = 'stylesheet';
+              styleLink.href = chrome.runtime.getURL('style.css');
+              styleLink.setAttribute('data-fast-copy', '1');
+              field.shadowRoot.appendChild(styleLink);
+            }
+
+            const button = createCopyButton(actualInput);
+            button.style.cssText = 'position:absolute !important; right:4px !important; top:50% !important; transform:translateY(-50%) !important; margin:0 !important;';
+
+            const inputWrapper = field.shadowRoot.querySelector('.input-wrapper');
+            if (inputWrapper) {
+              inputWrapper.style.position = 'relative';
+              inputWrapper.appendChild(button);
+            } else {
+              field.shadowRoot.appendChild(button);
+            }
+            return;
+          }
+
+          // Regular element flow
           if (!field.parentNode.querySelector('.fast-copy-btn')) {
             if (!field.parentNode.classList.contains('fast-copy-wrapper')) {
               const wrapper = document.createElement('div');
               wrapper.className = 'fast-copy-wrapper';
-              
+
               field.parentNode.insertBefore(wrapper, field);
               wrapper.appendChild(field);
-              
+
               field.classList.add('fast-copy-field');
             }
-            
+
             const button = createCopyButton(field);
             field.parentNode.appendChild(button);
           }
@@ -182,36 +245,41 @@ function addCopyButtons() {
 }
 
 function init() {
-  const safeAddCopyButtons = () => {
+  boundSafeAddCopyButtons = () => {
     try {
       addCopyButtons();
     } catch (error) {
       console.error('Error adding buttons:', error);
     }
   };
-  
-  safeAddCopyButtons();
-  
-  // Observer les changements dans le DOM
+
+  boundClickHandler = (e) => {
+    if (e.target.tagName === 'A' || e.target.closest('a')) {
+      setTimeout(boundSafeAddCopyButtons, 500);
+    }
+  };
+
+  boundSafeAddCopyButtons();
+
+  // Observe changes in DOM
   observer = new MutationObserver((mutations) => {
     let shouldCheck = false;
-    
+
     mutations.forEach((mutation) => {
-      // Vérifier les nœuds ajoutés ou les modifications d'attributs
-      if (mutation.addedNodes.length > 0 || 
-          (mutation.type === 'attributes' && 
-           (mutation.target.matches('input') || 
-            mutation.target.matches('div') || 
+      if (mutation.addedNodes.length > 0 ||
+          (mutation.type === 'attributes' &&
+           (mutation.target.matches('input') ||
+            mutation.target.matches('div') ||
             mutation.target.matches('form')))) {
         shouldCheck = true;
       }
     });
-    
+
     if (shouldCheck) {
-      safeAddCopyButtons();
+      boundSafeAddCopyButtons();
     }
   });
-  
+
   // Démarrer l'observation avec une configuration plus large
   observer.observe(document.body, {
     childList: true,
@@ -219,29 +287,24 @@ function init() {
     attributes: true,
     attributeFilter: ['class', 'style', 'data-*']
   });
-  
+
   // Réessayer après un délai pour les chargements dynamiques
   const maxRetries = 3;
   let retryCount = 0;
-  
+
   retryInterval = setInterval(() => {
     if (retryCount >= maxRetries) {
       clearInterval(retryInterval);
       return;
     }
-    
-    safeAddCopyButtons();
+
+    boundSafeAddCopyButtons();
     retryCount++;
   }, 1500);
-  
+
   // Écouter les événements de navigation dans l'interface Shopify
-  window.addEventListener('popstate', safeAddCopyButtons);
-  document.addEventListener('click', (e) => {
-    // Si un lien est cliqué, vérifier les boutons après un court délai
-    if (e.target.tagName === 'A' || e.target.closest('a')) {
-      setTimeout(safeAddCopyButtons, 500);
-    }
-  });
+  window.addEventListener('popstate', boundSafeAddCopyButtons);
+  document.addEventListener('click', boundClickHandler);
 }
 
 function enableFeature() {
@@ -256,12 +319,21 @@ function disableFeature() {
   isEnabled = false;
   try {
     if (observer) {
+      observer.takeRecords(); // discard any pending mutation records
       observer.disconnect();
       observer = null;
     }
     if (retryInterval) {
       clearInterval(retryInterval);
       retryInterval = null;
+    }
+    if (boundSafeAddCopyButtons) {
+      window.removeEventListener('popstate', boundSafeAddCopyButtons);
+      boundSafeAddCopyButtons = null;
+    }
+    if (boundClickHandler) {
+      document.removeEventListener('click', boundClickHandler);
+      boundClickHandler = null;
     }
   } catch (e) {}
   removeCopyButtons();

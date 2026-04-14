@@ -11,9 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     toggleSwitch.addEventListener('change', function() {
         const isActive = this.checked;
-        chrome.storage.sync.set({ isExtensionActive: isActive }, function() {
-            updateUI(isActive);
-        });
+        chrome.storage.sync.set({ isExtensionActive: isActive });
     });
 
     function updateUI(isActive) {
